@@ -1,5 +1,6 @@
 package com.itheima.mp.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.itheima.mp.domain.po.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -22,4 +23,7 @@ public interface UserMapper extends BaseMapper<User> {
 
 
     User queryById(long l);
+
+    void updateBalance(@Param("ew") UpdateWrapper<User> wrapper,@Param("amount") int amount);
+
 }

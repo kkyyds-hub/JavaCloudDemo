@@ -1,5 +1,8 @@
 package com.itheima.mp.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.itheima.mp.domain.po.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +57,53 @@ class UserMapperTest {
     }
 
     @Test
-    void testQuery() {
-        User user = userMapper.queryById(1L);
-        System.out.println("user = " + user);
+    void testQueryWrapper() {
+        // 1.构建查询条件 where name like "%o%" AND balance >= 1000
+        QueryWrapper<User> wrapper = new QueryWrapper<User>()
+                .select("id", "username", "info", "balance")
+                .like("username", "o")
+                .ge("balance", 1000);
+        // 2.查询数据
+        List<User> users = userMapper.selectList(wrapper);
+        users.forEach(System.out::println);
+    }
+    @Test
+    void testUpdateQueryWrapper() {
+        User user = new User();
+        user.setBalance(2000);
+        QueryWrapper<User> wrapper = new QueryWrapper<User>()
+                .eq("username", "jack");
+        userMapper.update(user, wrapper);
+    }
+
+     @Test
+    void testUpdeteIdQueryWrapper() {
+        List<Long> ids = List.of(1L, 2L, 4L);
+         UpdateWrapper<User> wrapper = new UpdateWrapper<User>()
+                 .setSql("balance = balance - 200")
+                 .in("id", ids);
+         userMapper.update( null,wrapper);
+
+     }
+    @Test
+    void testLambdaQueryWrapper() {
+        User user = new User();
+        user.setBalance(2000);
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
+                .select(User::getId,User::getBalance, User::getUsername, User::getInfo)
+                .like(User::getUsername, "o")
+                .ge(User::getBalance, 1000);
+        List<User> users = userMapper.selectList(wrapper);
+        users.forEach(System.out::println);
+    }
+
+    @Test
+    void testCustomQueryWrapper() {
+        List<Long> ids = List.of(1L, 2L, 4L);
+        int amount = 200;
+        UpdateWrapper<User> wrapper = new UpdateWrapper<User>().in("id", ids);
+        userMapper.updateBalance(wrapper,amount);
+
+
     }
 }
