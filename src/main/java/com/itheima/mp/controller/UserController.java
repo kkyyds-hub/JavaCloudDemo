@@ -3,6 +3,7 @@ package com.itheima.mp.controller;
 import com.itheima.mp.domain.dto.UserFormDTO;
 import com.itheima.mp.domain.po.User;
 import com.itheima.mp.domain.vo.UserVO;
+import com.itheima.mp.query.UserQuery;
 import com.itheima.mp.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,12 +44,28 @@ private final IUserService userService;
         return BeanUtil.copyProperties(user, UserVO.class);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("{ids}")
     @ApiOperation("根据id批量查询用户接口")
     public UserVO queryUserByIds(@ApiParam ("用户id集合") @RequestParam List<Long> ids) {
 
         // 查询用户PO
         List<User> users = userService.listByIds(ids);
+        return BeanUtil.copyProperties(users, UserVO.class);
+    }
+
+    @ApiOperation("扣减用户余额")
+    @PostMapping("{id}/deduction/{money}")
+    public void deduction(@ApiParam ("用户id") @PathVariable("id") Long id,
+                         @ApiParam ("扣减金额") @PathVariable("money") Integer money) {
+        userService.deductMoneyById(id, money);
+    }
+
+    @GetMapping("/list")
+    @ApiOperation("根据复杂条件查询用户接口")
+    public UserVO queryUsers(UserQuery query) {
+
+        // 查询用户PO
+        List<User> users = userService.queryUsers(query.getName() , query.getStatus(), query.getMinBalance(), query.getMaxBalance());
         return BeanUtil.copyProperties(users, UserVO.class);
     }
 }
