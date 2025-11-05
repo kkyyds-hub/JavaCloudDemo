@@ -38,19 +38,21 @@ private final IUserService userService;
     }
     @GetMapping("{id}")
     @ApiOperation("根据id查询用户接口")
-    public UserVO queryUserById(@ApiParam ("用户id") @PathVariable("id") Long id) {
-        // 查询用户PO
+    public UserVO queryUserById(@ApiParam ("用户id") @PathVariable("id") Long userId) {
+      /*  // 查询用户PO
         User user = userService.getById(id);
-        return BeanUtil.copyProperties(user, UserVO.class);
+        return BeanUtil.copyProperties(user, UserVO.class);*/
+        return userService.queryUsersAddressById(userId);
     }
 
     @GetMapping("{ids}")
     @ApiOperation("根据id批量查询用户接口")
-    public UserVO queryUserByIds(@ApiParam ("用户id集合") @RequestParam List<Long> ids) {
+    public List<UserVO> queryUserByIds(@ApiParam ("用户id集合") @RequestParam List<Long> ids) {
 
-        // 查询用户PO
+     /*   // 查询用户PO
         List<User> users = userService.listByIds(ids);
-        return BeanUtil.copyProperties(users, UserVO.class);
+        return BeanUtil.copyProperties(users, UserVO.class);*/
+        return userService.queryUsersAddressByIds(ids);
     }
 
     @ApiOperation("扣减用户余额")
