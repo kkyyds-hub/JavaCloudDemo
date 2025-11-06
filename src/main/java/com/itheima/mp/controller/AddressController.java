@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.itheima.mp.domain.po.Address;
 import com.itheima.mp.domain.po.User;
 import com.itheima.mp.domain.vo.AddressVO;
+import com.itheima.mp.enums.UserStatus;
 import com.itheima.mp.service.IAddressService;
 import com.itheima.mp.service.IUserService;
 import io.swagger.annotations.Api;
@@ -47,7 +48,7 @@ public class AddressController {
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
-        if (user.getStatus() == 2) {
+        if (user.getStatus() == UserStatus.FROZEN) {
             throw new RuntimeException("用户已被冻结，无法查询地址");
         }
         List<Address> addresses = addressService.getAddressByUserId(userId);

@@ -9,6 +9,7 @@ import com.itheima.mp.domain.po.Address;
 import com.itheima.mp.domain.po.User;
 import com.itheima.mp.domain.vo.AddressVO;
 import com.itheima.mp.domain.vo.UserVO;
+import com.itheima.mp.enums.UserStatus;
 import com.itheima.mp.mapper.UserMapper;
 import com.itheima.mp.service.IUserService;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         // 查询用户PO
         User user = getById(id);
         //校验用户状态
-        if (user == null||user.getStatus() ==2) {
+        if (user == null||user.getStatus() == UserStatus.FROZEN) {
             throw new RuntimeException("用户状态异常");
         }
 
@@ -37,7 +38,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         int remainBalance = user.getBalance() - money;
        lambdaUpdate()
                .set(User::getBalance, user.getBalance() - money)
-               .set(remainBalance==0, User::getStatus,2)
+               .set(remainBalance==0, User::getStatus,UserStatus.FROZEN)
                .eq(User::getId, id)
                .eq(User::getBalance, user.getBalance())
                .update();
@@ -58,8 +59,8 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
     public UserVO queryUsersAddressById(Long userId) {
         // 1.查询用户
         User user = getById(userId);
-        if (user == null) {
-            return null;
+        if (user == null||user.getStatus() == UserStatus.FROZEN) {
+            throw new RuntimeException("用户状态异常");
         }
         // 2.查询收货地址
         List<Address> addresses = Db.lambdaQuery(Address.class)
