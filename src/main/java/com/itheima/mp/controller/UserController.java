@@ -1,5 +1,6 @@
 package com.itheima.mp.controller;
 
+import com.itheima.mp.domain.dto.PageDTO;
 import com.itheima.mp.domain.dto.UserFormDTO;
 import com.itheima.mp.domain.po.User;
 import com.itheima.mp.domain.vo.UserVO;
@@ -69,5 +70,11 @@ private final IUserService userService;
         // 查询用户PO
         List<User> users = userService.queryUsers(query.getName() , query.getStatus(), query.getMinBalance(), query.getMaxBalance());
         return BeanUtil.copyProperties(users, UserVO.class);
+    }
+
+    @ApiOperation("根据条件分页查询用户接口")
+    @GetMapping("/page")
+    public PageDTO<UserVO> queryUsersByPage(UserQuery query) {
+        return userService.queryUsersPage(query);
     }
 }

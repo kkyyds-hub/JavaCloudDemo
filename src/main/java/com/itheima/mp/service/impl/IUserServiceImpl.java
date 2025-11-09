@@ -2,15 +2,20 @@ package com.itheima.mp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.itheima.mp.domain.dto.PageDTO;
 import com.itheima.mp.domain.po.Address;
 import com.itheima.mp.domain.po.User;
 import com.itheima.mp.domain.vo.AddressVO;
 import com.itheima.mp.domain.vo.UserVO;
 import com.itheima.mp.enums.UserStatus;
 import com.itheima.mp.mapper.UserMapper;
+import com.itheima.mp.query.UserQuery;
 import com.itheima.mp.service.IUserService;
 import org.springframework.stereotype.Service;
 
@@ -107,5 +112,19 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
        }
         return  list;
 
+    }
+
+    @Override
+    public PageDTO<UserVO> queryUsersPage(UserQuery query) {
+        String name = query.getName();
+        Integer status = query.getStatus();
+        Page<User> page = query.toMpPageDefaultSortByUpdateTimeDesc();
+
+         Page<User> p =lambdaQuery()
+                .like(name != null, User::getUsername, name)
+                .eq(status != null, User::getStatus, status)
+                .page(page);
+
+         return PageDTO.of(p, UserVO.class);
     }
 }
